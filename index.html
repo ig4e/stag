@@ -1,100 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+	<body class="dark dark:bg-gray-800">
+		<nav class="z-[100] py-2 bg-gray-800/50 drop-shadow-md backdrop-blur-xl text-white sticky top-0 border-b border-b-gray-500">
+			<div class="container mx-auto flex items-center justify-between px-4">
+				<a href="/">
+					<span class="text-lg font-bold">Moe.TV?</span>
+				</a>
+			</div>
+		</nav>
 
-<body class="dark dark:bg-gray-800">
-    <nav class="py-2 bg-gray-800/50 drop-shadow-md backdrop-blur-xl text-white">
-        <div class="container mx-auto flex items-center justify-between px-4">
-            
-        <a href="/">
-            <span>Moe.TV?</span>
-        </a>
-        </div>
-    </nav>
+		<div class="container mx-auto mt-4">
+			<div class="flex flex-wrap md:grid md:grid-cols-3 grid-flow-row-dense px-4 gap-4" id="images-container"></div>
+		</div>
 
-    <div class="flex flex-col items-center justify-center">
-        
-    </div>
-    
-    <script>
-        const imageContainer = document.body;
+		<div id="page-end" class="h-20 w-full"></div>
 
-        function generateImage() {
-            const mocks = ["https://cdn.gilcdn.com/ContentMediaGenericFiles/9579b9b82b09747da81f2e9f4c8e3b25-Full.webp", "https://cdn.gilcdn.com/ContentMediaGenericFiles/845c44e3fb015b0b8df87d3d2a04e2d3-Full.webp", "https://cdn.gilcdn.com/ContentMediaGenericFiles/d239dbe640e1b5351d7d58035b0097d3-Full.webp?w=600&h=337", "https://cdn.gilcdn.com/ContentMediaGenericFiles/613acb591486c3e54ab59506f6c20cda-Full.webp?w=960&h=640", ""]
+		<footer
+			class="z-[100] py-2 bg-gray-800 drop-shadow-md backdrop-blur-xl text-white fixed bottom-0 inset-x-0 border-t border-gray-500"
+		>
+			<div class="container mx-auto flex items-center justify-between px-4 gap-2">
+				<div class="bg-gray-900 w-full p-2 rounded-md flex items-center gap-2">
+					<button id="category-hentai" class="py-1 px-2 rounded-md w-full" onclick="switchMainCategory('hentai')">
+						<span>Hentai</span>
+					</button>
+					<button id="category-real" class="py-1 px-2 rounded-md w-full" onclick="switchMainCategory('real')">
+						<span>Real</span>
+					</button>
+				</div>
 
+				<dialog id="settings-dialog" class="rounded-lg bg-slate-800">
+					<div class="p-4 dark:bg-slate-800 dark:text-white flex flex-col gap-2 rounded-md max-w-sm w-full min-w-[90vw]">
+						<div class="w-full flex items-center justify-between">
+							<h2 class="text-2xl font-semibold">Filters</h2>
 
-            return mocks[Math.floor(Math.random() * mocks.length)];
-        }
+							<button
+								autofocus
+								id="settings-dialog-close"
+								class="flex items-center gap-1 bg-slate-500/50 hover:bg-slate-500 p-1 rounded-full w-fit self-start"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									class="w-5 h-5"
+								>
+									<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+								</svg>
+							</button>
+						</div>
 
-        function generateImageElement(url) {
-            const image = document.createElement("img");
-            image.src = url;
-            image.classList.add("w-full", "h-full", "object-cover", "object-center");
-            image.addEventListener("click", () => {
-                window.open(url, "_blank");
-            });
-            return image;
-        }
+						<div class="space-y-2">
+							<label for="hentai-categories" class="block text-lg font-medium text-gray-900 dark:text-white">Hentai</label>
+							<select
+								id="hentai-categories"
+								class="border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+							>
+								<option value="all">All</option>
+								<option value="vanila">Vanila</option>
+								<option value="yaoi">Yaoi</option>
+								<option value="yuri">Yuri</option>
+								<option value="bdsm">BDSM</option>
+								<option value="trap">Trap</option>
+							</select>
+						</div>
 
-        function renderImageElements(images) {
-            images.forEach((image => {
+						<div class="space-y-2">
+							<label for="real-categories" class="block text-lg font-medium text-gray-900 dark:text-white">Real</label>
 
-                imageContainer.appendChild(image);
+							<select
+								id="real-categories"
+								class="border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+							>
+								<option>All</option>
+								<option value="ass">Ass</option>
+								<option value="boobs">Boobs</option>
+								<option value="pussy">Pussy</option>
+							</select>
+						</div>
+					</div>
+				</dialog>
 
-                
-                })
-        }
+				<button id="settings-btn" class="flex items-center gap-2 bg-slate-500/50 hover:bg-slate-500 p-2.5 rounded-md">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="w-6 h-6"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
+						/>
+					</svg>
+				</button>
+			</div>
+		</footer>
 
-        // function generateImage() {
-        //     const imageDiv = document.createElement('div');
-        //     imageDiv.className = 'image-container';
-        //     const imageUrl = 'https://nsfw-api-p302.onrender.com/media/h/vanila?timestamp=' + Date.now();
-        //     const img = document.createElement('img');
-        //     img.src = imageUrl;
-        //     img.className = 'image';
+		<script>
+			HTMLDialogElement.prototype.triggerShow = HTMLDialogElement.prototype.showModal;
+			HTMLDialogElement.prototype.showModal = function () {
+				this.triggerShow();
+				this.onclick = (event) => {
+					let rect = this.getBoundingClientRect();
+					if (event.clientY < rect.top || event.clientY > rect.bottom) return this.close();
+					if (event.clientX < rect.left || event.clientX > rect.right) return this.close();
+				};
+			};
 
-        //     imageDiv.appendChild(img);
-        //     imageContainer.appendChild(imageDiv);
-        // }
+			const dialog = document.getElementById("settings-dialog");
+			const showButton = document.getElementById("settings-btn");
+			const closeButton = document.getElementById("settings-dialog-close");
+			const closeButton2 = document.getElementById("settings-dialog-close-2");
 
+			// "Show the dialog" button opens the dialog modally
+			showButton.addEventListener("click", () => {
+				dialog.showModal();
+			});
 
+			// "Close" button closes the dialog
+			closeButton.addEventListener("click", () => {
+				dialog.close();
+			});
+			closeButton2.addEventListener("click", () => {
+				dialog.close();
+			});
+		</script>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Code to execute when the page has finished loading
+		<script>
+			let images = [];
+			const imageContainer = document.getElementById("images-container");
+			const state = {
+				search: "",
+				category: "hentai",
+				filters: {
+					hentai: "all",
+					real: "all",
+				},
+				tags: [],
+			};
 
-            function runFunctionMultipleTimes() {
-                for (let i = 0; i < 6; i++) {
-                    setTimeout(() => {
-                        generateImage();
-                    }, i * 600); // Each function call will be delayed by 500 milliseconds
-                }
-            }
+			const hentaiCategoriesSelect = document.getElementById("hentai-categories");
+			const realCategoriesSelect = document.getElementById("real-categories");
 
-            runFunctionMultipleTimes();
-        });
+			hentaiCategoriesSelect.onchange = (e) => {
+				state.filters.hentai = e.target.value;
+			};
 
-        window.addEventListener('scroll', () => {
-            setTimeout(() => {
-                generateImage();
-            }, 600);
-        });
-    </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('script.js')
-                .then((registration) => {
-                    console.log('Service Worker registered with scope:', registration.scope);
-                })
-                .catch((error) => {
-                    console.error('Service Worker registration failed:', error);
-                });
-        }
-    </script>
-</body>
+			realCategoriesSelect.onchange = (e) => {
+				state.filters.real = e.target.value;
+			};
 
+			function switchMainCategory(category) {
+				const hentaiBtn = document.getElementById("category-hentai");
+				const realBtn = document.getElementById("category-real");
+				const activeClass = "bg-slate-600";
+				const notActiveClass = "bg-slate-800";
+
+				state.category = category;
+				if (category === "real") {
+					realBtn.classList.add(activeClass);
+					realBtn.classList.remove(notActiveClass);
+
+					hentaiBtn.classList.remove(activeClass);
+					hentaiBtn.classList.add(notActiveClass);
+				} else {
+					hentaiBtn.classList.add(activeClass);
+					hentaiBtn.classList.remove(notActiveClass);
+
+					realBtn.classList.remove(activeClass);
+					realBtn.classList.add(notActiveClass);
+				}
+			}
+
+			async function generateMockImage() {
+				const mockCategories = ["vanila", "yuri", "bdsm", "trap"];
+
+				const mocks = [
+					{
+						url: "https://cdn.gilcdn.com/ContentMediaGenericFiles/9579b9b82b09747da81f2e9f4c8e3b25-Full.webp",
+						category: mockCategories[Math.floor(Math.random() * mockCategories.length)],
+					},
+					{
+						url: "https://cdn.gilcdn.com/ContentMediaGenericFiles/845c44e3fb015b0b8df87d3d2a04e2d3-Full.webp",
+						category: mockCategories[Math.floor(Math.random() * mockCategories.length)],
+					},
+					{
+						url: "https://cdn.gilcdn.com/ContentMediaGenericFiles/d239dbe640e1b5351d7d58035b0097d3-Full.webp",
+						category: mockCategories[Math.floor(Math.random() * mockCategories.length)],
+					},
+					{
+						url: "https://cdn.gilcdn.com/ContentMediaGenericFiles/613acb591486c3e54ab59506f6c20cda-Full.webp",
+						category: mockCategories[Math.floor(Math.random() * mockCategories.length)],
+					},
+				];
+
+				return new Promise((resolve) => {
+					setTimeout(() => resolve(mocks[Math.floor(Math.random() * mocks.length)]), 1000);
+				});
+			}
+
+			function generateImageElement({ url, category }) {
+				const container = document.createElement("div");
+				const image = document.createElement("img");
+				const imagePreviewImage = document.createElement("img");
+				const imagePreview = document.createElement("dialog");
+
+				image.src = url;
+				image.classList.add("object-cover", "object-center", "rounded-md");
+
+				imagePreview.classList.add("rounded-lg", "bg-slate-800", "outline-none");
+
+				imagePreviewImage.src = url;
+				imagePreviewImage.classList.add("object-cover", "object-center", "rounded-md", "max-h-[90vh]", "outline-none");
+
+				imagePreview.append(imagePreviewImage);
+
+				image.onclick = () => imagePreview.showModal();
+
+				container.append(image, imagePreview);
+
+				return container;
+			}
+
+			async function renderImageElements(images) {
+				return await Promise.all(
+					images.map(async (imagePromise) => {
+						console.log(imagePromise);
+						const image = await imagePromise;
+
+						console.log(image);
+
+						return imageContainer.appendChild(generateImageElement(image));
+					}),
+				);
+			}
+
+			async function loadMore() {
+				console.log("end of page");
+			}
+
+			document.addEventListener("DOMContentLoaded", async () => {
+				console.log("Hello!");
+				switchMainCategory(state.category);
+
+				images = Array.from({ length: 20 })
+					.fill(null)
+					.map((_value, i) => {
+						return generateMockImage();
+					});
+
+				console.log("Hello!!", images);
+
+				renderImageElements(images);
+			});
+
+			window.addEventListener("scroll", () => {
+				let scrollTop = window.scrollY;
+				let docHeight = document.body.offsetHeight;
+				let winHeight = window.innerHeight;
+				let scrollPercent = scrollTop / (docHeight - winHeight);
+				let scrollPercentRounded = Math.round(scrollPercent * 100);
+				if (scrollPercentRounded >= 79) {
+					loadMore();
+				}
+			});
+		</script>
+		<script>
+			if ("serviceWorker" in navigator) {
+				navigator.serviceWorker
+					.register("script.js")
+					.then((registration) => {
+						console.log("Service Worker registered with scope:", registration.scope);
+					})
+					.catch((error) => {
+						console.error("Service Worker registration failed:", error);
+					});
+			}
+		</script>
+
+		<style>
+			dialog::backdrop {
+				z-index: 50;
+				backdrop-filter: blur(6px);
+			}
+		</style>
+	</body>
 </html>
