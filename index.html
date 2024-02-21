@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="dark dark:bg-gray-800">
+    <nav class="py-2 bg-gray-800/50 drop-shadow-md backdrop-blur-xl text-white">
+        <div class="container mx-auto flex items-center justify-between px-4">
+            
+        <a href="/">
+            <span>Moe.TV?</span>
+        </a>
+        </div>
+    </nav>
+
+    <div class="flex flex-col items-center justify-center">
+        
+    </div>
+    
+    <script>
+        const imageContainer = document.body;
+
+        function generateImage() {
+            const mocks = ["https://cdn.gilcdn.com/ContentMediaGenericFiles/9579b9b82b09747da81f2e9f4c8e3b25-Full.webp", "https://cdn.gilcdn.com/ContentMediaGenericFiles/845c44e3fb015b0b8df87d3d2a04e2d3-Full.webp", "https://cdn.gilcdn.com/ContentMediaGenericFiles/d239dbe640e1b5351d7d58035b0097d3-Full.webp?w=600&h=337", "https://cdn.gilcdn.com/ContentMediaGenericFiles/613acb591486c3e54ab59506f6c20cda-Full.webp?w=960&h=640", ""]
+
+
+            return mocks[Math.floor(Math.random() * mocks.length)];
+        }
+
+        function generateImageElement(url) {
+            const image = document.createElement("img");
+            image.src = url;
+            image.classList.add("w-full", "h-full", "object-cover", "object-center");
+            image.addEventListener("click", () => {
+                window.open(url, "_blank");
+            });
+            return image;
+        }
+
+        function renderImageElements(images) {
+            images.forEach((image => {
+
+                imageContainer.appendChild(image);
+
+                
+                })
+        }
+
+        // function generateImage() {
+        //     const imageDiv = document.createElement('div');
+        //     imageDiv.className = 'image-container';
+        //     const imageUrl = 'https://nsfw-api-p302.onrender.com/media/h/vanila?timestamp=' + Date.now();
+        //     const img = document.createElement('img');
+        //     img.src = imageUrl;
+        //     img.className = 'image';
+
+        //     imageDiv.appendChild(img);
+        //     imageContainer.appendChild(imageDiv);
+        // }
+
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Code to execute when the page has finished loading
+
+            function runFunctionMultipleTimes() {
+                for (let i = 0; i < 6; i++) {
+                    setTimeout(() => {
+                        generateImage();
+                    }, i * 600); // Each function call will be delayed by 500 milliseconds
+                }
+            }
+
+            runFunctionMultipleTimes();
+        });
+
+        window.addEventListener('scroll', () => {
+            setTimeout(() => {
+                generateImage();
+            }, 600);
+        });
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('script.js')
+                .then((registration) => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch((error) => {
+                    console.error('Service Worker registration failed:', error);
+                });
+        }
+    </script>
+</body>
+
+</html>
