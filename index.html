@@ -15,7 +15,7 @@
 			</div>
 		</nav>
 
-		<div class="container mx-auto mt-4">
+		<div class="container mx-auto mt-4 min-h-screen" style="min-height: 100vh">
 			<div class="flex flex-wrap md:grid md:grid-cols-3 grid-flow-row-dense px-4 gap-4" id="images-container"></div>
 		</div>
 
@@ -66,11 +66,6 @@
 								class="border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 							>
 								<option value="all">All</option>
-								<option value="vanila">Vanila</option>
-								<option value="yaoi">Yaoi</option>
-								<option value="yuri">Yuri</option>
-								<option value="bdsm">BDSM</option>
-								<option value="trap">Trap</option>
 							</select>
 						</div>
 
@@ -81,10 +76,19 @@
 								id="real-categories"
 								class="border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 							>
-								<option>All</option>
-								<option value="ass">Ass</option>
-								<option value="boobs">Boobs</option>
-								<option value="pussy">Pussy</option>
+								<option value="all">All</option>
+							</select>
+						</div>
+
+						<div class="space-y-2">
+							<label for="mode-select" class="block text-lg font-medium text-gray-900 dark:text-white">Mode</label>
+
+							<select
+								id="mode-select"
+								class="border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+							>
+								<option value="sfw" selected>SFW</option>
+								<option value="nsfw">NSFW</option>
 							</select>
 						</div>
 					</div>
@@ -143,7 +147,7 @@
 		<script>
 			let images = [];
 			const imageContainer = document.getElementById("images-container");
-			const state = {
+			let state = {
 				search: "",
 				category: "hentai",
 				filters: {
@@ -151,17 +155,50 @@
 					real: "all",
 				},
 				tags: [],
+				sfw: true,
 			};
+			const nekoCategories = [
+				"smug",
+				"woof",
+				"gasm",
+				"8ball",
+				"goose",
+				"cuddle",
+				"avatar",
+				"slap",
+				"v3",
+				"pat",
+				"gecg",
+				"feed",
+				"fox_girl",
+				"lizard",
+				"neko",
+				"hug",
+				"meow",
+				"kiss",
+				"wallpaper",
+				"tickle",
+				"spank",
+				"waifu",
+				"lewd",
+				"ngif",
+			];
 
 			const hentaiCategoriesSelect = document.getElementById("hentai-categories");
 			const realCategoriesSelect = document.getElementById("real-categories");
 
 			hentaiCategoriesSelect.onchange = (e) => {
 				state.filters.hentai = e.target.value;
+				localStorage.setItem("settings", JSON.stringify(state));
+				images = getPage();
+				renderImageElements(images);
 			};
 
 			realCategoriesSelect.onchange = (e) => {
 				state.filters.real = e.target.value;
+				localStorage.setItem("settings", JSON.stringify(state));
+				images = getPage();
+				renderImageElements(images);
 			};
 
 			function switchMainCategory(category) {
@@ -171,6 +208,7 @@
 				const notActiveClass = "bg-slate-800";
 
 				state.category = category;
+				localStorage.setItem("settings", JSON.stringify(state));
 				if (category === "real") {
 					realBtn.classList.add(activeClass);
 					realBtn.classList.remove(notActiveClass);
@@ -184,6 +222,28 @@
 					realBtn.classList.remove(activeClass);
 					realBtn.classList.add(notActiveClass);
 				}
+
+				images = getPage();
+				renderImageElements(images);
+			}
+
+			async function generateImage(api) {
+				if (!["nekos", "night-api"].includes(api)) return;
+
+				if (api === "nekos") {
+					const chosenCategory =
+						state.filters.hentai === "all"
+							? nekoCategories[Math.floor(Math.random() * nekoCategories.length)]
+							: state.filters.hentai;
+
+					const { url } = await fetch("https://nekos.life/api/v2/img/" + chosenCategory).then((res) => res.json());
+
+					return {
+						id: crypto.randomUUID(),
+						url,
+						category: chosenCategory,
+					};
+				}
 			}
 
 			async function generateMockImage() {
@@ -191,36 +251,44 @@
 
 				const mocks = [
 					{
+						id: crypto.randomUUID(),
 						url: "https://cdn.gilcdn.com/ContentMediaGenericFiles/9579b9b82b09747da81f2e9f4c8e3b25-Full.webp",
 						category: mockCategories[Math.floor(Math.random() * mockCategories.length)],
 					},
 					{
+						id: crypto.randomUUID(),
 						url: "https://cdn.gilcdn.com/ContentMediaGenericFiles/845c44e3fb015b0b8df87d3d2a04e2d3-Full.webp",
 						category: mockCategories[Math.floor(Math.random() * mockCategories.length)],
 					},
 					{
+						id: crypto.randomUUID(),
 						url: "https://cdn.gilcdn.com/ContentMediaGenericFiles/d239dbe640e1b5351d7d58035b0097d3-Full.webp",
 						category: mockCategories[Math.floor(Math.random() * mockCategories.length)],
 					},
 					{
+						id: crypto.randomUUID(),
 						url: "https://cdn.gilcdn.com/ContentMediaGenericFiles/613acb591486c3e54ab59506f6c20cda-Full.webp",
 						category: mockCategories[Math.floor(Math.random() * mockCategories.length)],
 					},
 				];
 
 				return new Promise((resolve) => {
-					setTimeout(() => resolve(mocks[Math.floor(Math.random() * mocks.length)]), 1000 * (Math.random() * 10));
+					setTimeout(() => resolve(mocks[Math.floor(Math.random() * mocks.length)]), 1000);
 				});
 			}
 
-			function generateImageElement({ url, category }) {
+			function generateImageElement({ id, url, category }) {
 				const container = document.createElement("div");
 				const image = document.createElement("img");
 				const imagePreviewImage = document.createElement("img");
 				const imagePreview = document.createElement("dialog");
+				const blur = document.createElement("div");
+				const categoryBadge = document.createElement("p");
 
 				image.src = url;
 				image.classList.add("object-cover", "object-center", "rounded-md", "bg-slate-900");
+				image.setAttribute("data-blur", state.sfw);
+				container.classList.add("relative", "rounded-md", "overflow-hidden");
 
 				imagePreview.classList.add("rounded-lg", "bg-slate-800", "outline-none");
 
@@ -229,9 +297,32 @@
 
 				imagePreview.append(imagePreviewImage);
 
-				image.onclick = () => imagePreview.showModal();
+				blur.classList.add("backdrop-blur-2xl", "bg-gray-500/20", "absolute", "inset-0", "w-full", "h-full");
 
-				container.append(image, imagePreview);
+				categoryBadge.classList.add(
+					"bg-slate-900",
+					"px-1.5",
+					"py-0.5",
+					"rounded-md",
+					"absolute",
+					"left-2",
+					"bottom-2",
+					"text-white",
+					"z-50",
+					"text-sm",
+				);
+
+				categoryBadge.innerText = category;
+
+				container.append(image, imagePreview, categoryBadge);
+				if (state.sfw) {
+					container.append(blur);
+				}
+
+				image.onclick = () => imagePreview.showModal();
+				blur.onclick = () => imagePreview.showModal();
+
+				container.id = id + `?sfw=${state.sfw}`;
 
 				return container;
 			}
@@ -250,41 +341,76 @@
 			}
 
 			async function renderImageElements(images) {
+				const imageContainer = document.getElementById("images-container");
+
+				imageContainer.innerHTML = "";
+
 				return await Promise.all(
 					images.map(async (imagePromise, index) => {
 						const skeleton = generateImageSkeletonElement("img-" + index);
 						imageContainer.append(skeleton);
 						const image = await imagePromise;
 						imageContainer.removeChild(skeleton);
+
 						return imageContainer.appendChild(generateImageElement(image));
 					}),
 				);
 			}
 
+			function getPage() {
+				return Array.from({ length: 25 })
+					.fill(null)
+					.map((_value, i) => {
+						return generateImage(state.category === "hentai" ? "nekos" : "night-api");
+					});
+			}
+
 			async function loadMore() {
 				console.log("end of page");
+				const newImages = getPage();
 
-				//How to add more images
-				//images = newImagesArray XXXXX كدا هتعمل ريسيت للصور كلها لو حابب تعمل ريسيت اعملها كدا
-				//images = [...images, ...newImagesArray] كدا تمام لطيف هتزود صور
-				//ممكن بردو تستعمل array.push()
+				images = [...images, ...newImages];
 
-				//واخيرا call renderImageElements(images);
-				//عشان ترندر كل حاجة
+				renderImageElements(images);
 			}
 
 			document.addEventListener("DOMContentLoaded", async () => {
-				switchMainCategory(state.category);
-				const observer = new IntersectionObserver(loadMore, { threshold: 0.5 });
-				observer.observe(document.getElementById("page-end-element"));
+				const hentaiFiltersSelect = document.getElementById("hentai-categories");
+				for (let nekoCate of nekoCategories) {
+					const option = document.createElement("option");
+					option.setAttribute("value", nekoCate);
+					option.innerText = nekoCate;
 
-				images = Array.from({ length: 20 })
-					.fill(null)
-					.map((_value, i) => {
-						return generateMockImage();
-					});
+					hentaiFiltersSelect.append(option);
+				}
+
+				const localSettings = localStorage.getItem("settings");
+				if (!localSettings) localStorage.setItem("settings", JSON.stringify(state));
+				if (localSettings) {
+					state = JSON.parse(localSettings);
+					const hentaiFilters = document.getElementById("hentai-categories");
+					const realFilters = document.getElementById("real-categories");
+					const modeSelect = document.getElementById("mode-select");
+
+					hentaiFilters.value = state.filters.hentai;
+					realFilters.value = state.filters.real;
+					modeSelect.value = state.sfw ? "sfw" : "nsfw";
+				}
+
+				switchMainCategory(state.category);
+
+				const observer = new IntersectionObserver(loadMore, { threshold: 0.5 });
+				const sfwCheckbox = document.getElementById("mode-select");
 
 				renderImageElements(images);
+
+				sfwCheckbox.onchange = (e) => {
+					state.sfw = e.target.value === "sfw";
+					localStorage.setItem("settings", JSON.stringify(state));
+					renderImageElements(images);
+				};
+
+				setTimeout(() => observer.observe(document.getElementById("page-end-element")), 2000);
 			});
 		</script>
 		<script>
@@ -302,7 +428,6 @@
 
 		<style>
 			dialog::backdrop {
-				z-index: 50;
 				backdrop-filter: blur(6px);
 			}
 		</style>
