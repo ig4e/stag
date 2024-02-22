@@ -19,7 +19,9 @@
 			<div class="flex flex-wrap md:grid md:grid-cols-3 grid-flow-row-dense px-4 gap-4" id="images-container"></div>
 		</div>
 
-		<div id="page-end" class="h-20 w-full"></div>
+		<div id="page-end-element" class="h-20 w-full">
+			<span>Loading....</span>
+		</div>
 
 		<footer
 			class="z-[100] py-2 bg-gray-800 drop-shadow-md backdrop-blur-xl text-white fixed bottom-0 inset-x-0 border-t border-gray-500"
@@ -132,6 +134,7 @@
 			closeButton.addEventListener("click", () => {
 				dialog.close();
 			});
+
 			closeButton2.addEventListener("click", () => {
 				dialog.close();
 			});
@@ -206,7 +209,7 @@
 				];
 
 				return new Promise((resolve) => {
-					setTimeout(() => resolve(mocks[Math.floor(Math.random() * mocks.length)]), 1000);
+					setTimeout(() => resolve(mocks[Math.floor(Math.random() * mocks.length)]), 1000 * (Math.random() * 10));
 				});
 			}
 
@@ -217,7 +220,7 @@
 				const imagePreview = document.createElement("dialog");
 
 				image.src = url;
-				image.classList.add("object-cover", "object-center", "rounded-md");
+				image.classList.add("object-cover", "object-center", "rounded-md", "bg-slate-900");
 
 				imagePreview.classList.add("rounded-lg", "bg-slate-800", "outline-none");
 
@@ -233,14 +236,26 @@
 				return container;
 			}
 
+			function generateImageSkeletonElement(id) {
+				const skeleton = document.createElement("div");
+				const randomHeights = [200, 300, 400, 100];
+
+				const randomHeight = randomHeights[Math.floor(Math.random() * randomHeights.length)];
+
+				skeleton.id = id;
+
+				skeleton.classList.add("rounded-md", "bg-slate-900", "animate-pulse", "w-full", "h-full", `min-h-[${randomHeight}px]`);
+
+				return skeleton;
+			}
+
 			async function renderImageElements(images) {
 				return await Promise.all(
-					images.map(async (imagePromise) => {
-						console.log(imagePromise);
+					images.map(async (imagePromise, index) => {
+						const skeleton = generateImageSkeletonElement("img-" + index);
+						imageContainer.append(skeleton);
 						const image = await imagePromise;
-
-						console.log(image);
-
+						imageContainer.removeChild(skeleton);
 						return imageContainer.appendChild(generateImageElement(image));
 					}),
 				);
@@ -251,8 +266,9 @@
 			}
 
 			document.addEventListener("DOMContentLoaded", async () => {
-				console.log("Hello!");
 				switchMainCategory(state.category);
+				const observer = new IntersectionObserver(loadMore, { threshold: 0.5 });
+				observer.observe(document.getElementById("page-end-element"));
 
 				images = Array.from({ length: 20 })
 					.fill(null)
@@ -260,20 +276,7 @@
 						return generateMockImage();
 					});
 
-				console.log("Hello!!", images);
-
 				renderImageElements(images);
-			});
-
-			window.addEventListener("scroll", () => {
-				let scrollTop = window.scrollY;
-				let docHeight = document.body.offsetHeight;
-				let winHeight = window.innerHeight;
-				let scrollPercent = scrollTop / (docHeight - winHeight);
-				let scrollPercentRounded = Math.round(scrollPercent * 100);
-				if (scrollPercentRounded >= 79) {
-					loadMore();
-				}
 			});
 		</script>
 		<script>
